@@ -1,6 +1,15 @@
 # spatio-temporal-GPs
-Codes for 'Spatio-Temporal Variational Gaussian Processes'
+Code for the NeurIPS 2021 paper *'Spatio-Temporal Variational Gaussian Processes'* by Oliver Hamelijnck, William Wilkinson, Niki Loppi, Arno Solin and Theodoros Damoulas.
 
+## Citing this work:
+```
+@inproceedings{hamelijnck2021spatio,
+	title={Spatio-Temporal Variational {G}aussian Processes},
+	author={Hamelijnck, Oliver and Wilkinson, William and Loppi, Niki and Solin, Arno and Damoulas, Theodoros},
+	booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+	year={2021},
+}
+```
 
 
 ## Data Download
