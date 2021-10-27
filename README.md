@@ -14,7 +14,7 @@ Code for the NeurIPS 2021 paper *'Spatio-Temporal Variational Gaussian Processes
 
 ## Experiment Setup
 
-This has been tested on a Macbook Pro.
+This has been tested on a Macbook Pro. All spatio-temporal VGP models have been implemented within the Bayes-newton package: https://github.com/AaltoML/Newt . 
 
 ### Environment Setup
 
@@ -49,5 +49,15 @@ which will download the relevant London air quality and NYC data, clean them, an
 
 ### Running Experiments
 
-tbd.
+To run all experiments across all training folds run:
 
+```bash
+make experiments
+```
+
+To run an individual experiment refer to the Makefile.
+
+#### Baselines used
+
+- GPFlow2 : https://github.com/GPflow/GPflow
+- GPYTorch: https://github.com/cornellius-gp/gpytorch
