@@ -21,6 +21,7 @@ try:
     import geopandas as gpd
     from geopandas.tools import sjoin
 except ModuleNotFoundError:
+    print('Geopandas not found')
     pass
 
 
@@ -35,7 +36,7 @@ PREDICTION_SITE = 'HK6' #HK6 = Hackney - Old Street
 DATE_START='2019/01/01'
 DATE_END='2019/04/01'
 TRAIN_SPLIT=0.8 #use 80% of data for training
-datasets_folder_root = '../../datasets'
+datasets_folder_root = '../../datasets/'
 
 SEED = 3
 
@@ -181,8 +182,8 @@ if __name__ == "__main__":
     # This file is also imported to extract the experiment information. To avoid import issues they are included here.
     import sys
     sys.path.append('../')
-    from utils.utils import normalise_df, create_spatial_temporal_grid, datetime_to_epoch, normalise, ensure_timeseries_at_each_locations, un_normalise_df, epoch_to_datetime, pad_with_nan_to_make_grid
-    import utils.utils as utils
+    from utils import normalise_df, create_spatial_temporal_grid, datetime_to_epoch, normalise, ensure_timeseries_at_each_locations, un_normalise_df, epoch_to_datetime, pad_with_nan_to_make_grid
+    import utils 
 
     #ensure correct data structure
     Path("data/").mkdir(exist_ok=True)

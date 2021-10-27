@@ -39,9 +39,13 @@ All data, preprocessed and split into train-test splits used in the paper is pro
 
 #### Manual Data Setup
 
-We also provide scripts to generate the data. To download the raw  London air pollution and NYC crime data simply run the corresponding `./run.sh` scripts within the  `datasets` folder.
+We also provide scripts to generate the data manually:
 
-Then within each experiment folder (e.g `experiments/air_quality/`) run `python setup_data.py`.
+```bash
+make data
+```
+
+which will download the relevant London air quality and NYC data, clean them, and split into train-test splits.
 
 ### Running Experiments
 

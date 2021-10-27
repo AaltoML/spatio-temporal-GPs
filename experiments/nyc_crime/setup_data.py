@@ -116,7 +116,7 @@ def load_data():
         return df
 
     data_root = f'{dataset_folder_root}/new_york_crime_large/'
-    boundary_data_root = f'{dataset_folder_root}/new_york_crime/'
+    boundary_data_root = f'{dataset_folder_root}/new_york_crime_large/'
     df = get_dataframe(data_root, 'data/cleaned_nyc_crime.csv')
     boundaries_gdf = gpd.read_file(f'{boundary_data_root}/data/Borough_Boundaries/nyc.shp')
 
@@ -126,8 +126,8 @@ def load_data():
 if __name__ == "__main__":
     import sys
     sys.path.append('../')
-    from utils.utils import normalise_df, create_spatial_temporal_grid, datetime_to_epoch, normalise, ensure_timeseries_at_each_locations, un_normalise_df, epoch_to_datetime
-    from utils import utils
+    from utils import normalise_df, create_spatial_temporal_grid, datetime_to_epoch, normalise, ensure_timeseries_at_each_locations, un_normalise_df, epoch_to_datetime
+    import utils
 
     logger.info('setting up data')
 
