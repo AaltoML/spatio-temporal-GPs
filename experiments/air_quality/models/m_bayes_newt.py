@@ -1,4 +1,4 @@
-import newt
+import bayesnewton
 import objax
 import numpy as np
 import pickle
@@ -32,8 +32,8 @@ else:
     parallel = None
 
 # ===========================Load Data===========================
-train_data = pickle.load(open("data/train_data_" + str(ind) + ".pickle", "rb"))
-pred_data = pickle.load(open("data/pred_data_" + str(ind) + ".pickle", "rb"))
+train_data = pickle.load(open("../data/train_data_" + str(ind) + ".pickle", "rb"))
+pred_data = pickle.load(open("../data/pred_data_" + str(ind) + ".pickle", "rb"))
 
 X = train_data['X']
 Y = train_data['Y']
@@ -51,8 +51,8 @@ print("num data points =", Y.shape[0])
 
 if grid:
     # the gridded approach:
-    t, R, Y = newt.utils.create_spatiotemporal_grid(X, Y)
-    t_t, R_t, Y_t = newt.utils.create_spatiotemporal_grid(X_t, Y_t)
+    t, R, Y = bayesnewton.utils.create_spatiotemporal_grid(X, Y)
+    t_t, R_t, Y_t = bayesnewton.utils.create_spatiotemporal_grid(X_t, Y_t)
 else:
     # the sequential approach:
     t = X[:, :1]
@@ -79,7 +79,7 @@ if sparse:
 else:
     z = R[0, ...]
 
-# kern = newt.kernels.SpatioTemporalMatern52(variance=var_f,
+# kern = bayesnewton.kernels.SpatioTemporalMatern52(variance=var_f,
 #                                            lengthscale_time=len_time,
 #                                            lengthscale_space=[len_space, len_space],
 #                                            z=z,
@@ -87,24 +87,24 @@ else:
 #                                            opt_z=opt_z,
 #                                            conditional='Full')
 
-kern_time = newt.kernels.Matern32(variance=var_f, lengthscale=len_time)
-kern_space0 = newt.kernels.Matern32(variance=var_f, lengthscale=len_space)
-kern_space1 = newt.kernels.Matern32(variance=var_f, lengthscale=len_space)
-kern_space = newt.kernels.Separable([kern_space0, kern_space1])
+kern_time = bayesnewton.kernels.Matern32(variance=var_f, lengthscale=len_time)
+kern_space0 = bayesnewton.kernels.Matern32(variance=var_f, lengthscale=len_space)
+kern_space1 = bayesnewton.kernels.Matern32(variance=var_f, lengthscale=len_space)
+kern_space = bayesnewton.kernels.Separable([kern_space0, kern_space1])
 
-kern = newt.kernels.SpatioTemporalKernel(temporal_kernel=kern_time,
-                                         spatial_kernel=kern_space,
-                                         z=z,
-                                         sparse=sparse,
-                                         opt_z=opt_z,
-                                         conditional='Full')
+kern = bayesnewton.kernels.SpatioTemporalKernel(temporal_kernel=kern_time,
+                                                spatial_kernel=kern_space,
+                                                z=z,
+                                                sparse=sparse,
+                                                opt_z=opt_z,
+                                                conditional='Full')
 
-lik = newt.likelihoods.Gaussian(variance=var_y)
+lik = bayesnewton.likelihoods.Gaussian(variance=var_y)
 
 if mean_field:
-    model = newt.models.MarkovVariationalMeanFieldGP(kernel=kern, likelihood=lik, X=t, R=R, Y=Y, parallel=parallel)
+    model = bayesnewton.models.MarkovVariationalMeanFieldGP(kernel=kern, likelihood=lik, X=t, R=R, Y=Y, parallel=parallel)
 else:
-    model = newt.models.MarkovVariationalGP(kernel=kern, likelihood=lik, X=t, R=R, Y=Y, parallel=parallel)
+    model = bayesnewton.models.MarkovVariationalGP(kernel=kern, likelihood=lik, X=t, R=R, Y=Y, parallel=parallel)
 
 lr_adam = 0.01
 lr_newton = 1.
@@ -140,9 +140,9 @@ print('rmse: %2.3f' % rmse)
 
 cpugpu = xla_bridge.get_backend().platform
 
-with open("output/" + str(int(mean_field)) + "_" + str(ind) + "_" + str(int(parallel)) + "_" + cpugpu + "_time.txt", "wb") as fp:
+with open("../results/" + str(int(mean_field)) + "_" + str(ind) + "_" + str(int(parallel)) + "_" + cpugpu + "_time.txt", "wb") as fp:
     pickle.dump(avg_time_taken, fp)
-with open("output/" + str(int(mean_field)) + "_" + str(ind) + "_" + str(int(parallel)) + "_" + cpugpu + "_nlpd.txt", "wb") as fp:
+with open("../results/" + str(int(mean_field)) + "_" + str(ind) + "_" + str(int(parallel)) + "_" + cpugpu + "_nlpd.txt", "wb") as fp:
     pickle.dump(nlpd, fp)
-with open("output/" + str(int(mean_field)) + "_" + str(ind) + "_" + str(int(parallel)) + "_" + cpugpu + "_rmse.txt", "wb") as fp:
+with open("../results/" + str(int(mean_field)) + "_" + str(ind) + "_" + str(int(parallel)) + "_" + cpugpu + "_rmse.txt", "wb") as fp:
     pickle.dump(rmse, fp)
