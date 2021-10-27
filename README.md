@@ -1,4 +1,5 @@
 # spatio-temporal-GPs
+
 Code for the NeurIPS 2021 paper *'Spatio-Temporal Variational Gaussian Processes'* by Oliver Hamelijnck, William Wilkinson, Niki Loppi, Arno Solin and Theodoros Damoulas.
 
 ## Citing this work:
@@ -11,12 +12,38 @@ Code for the NeurIPS 2021 paper *'Spatio-Temporal Variational Gaussian Processes
 }
 ```
 
+## Experiment Setup
 
-## Data Download
+This has been tested on a Macbook Pro.
 
-All data, preprocessed and split into train-test splits used in the paper is provided at https://doi.org/10.5281/zenodo.4531304. 
+### Environment Setup
 
+We recommend using conda:
 
+```bash
+conda create -n spatio_gp python=3.7
+conda activate spatio_gp
+```
 
-We also provide the scripts used to download the London air pollution and NYC crime data within the  `datasets` folder. To download (on Mac/Unix) simply run the corresponding `./run.sh` scripts.
+Then install the required python packages:
+
+```
+pip install -r requirements.txt
+```
+
+### Data Download
+
+#### Pre-processed Data
+
+All data, preprocessed and split into train-test splits used in the paper is provided at https://doi.org/10.5281/zenodo.4531304. Download the folder and place the corresponding datasets into `experiments/*/data` folders.
+
+#### Manual Data Setup
+
+We also provide scripts to generate the data. To download the raw  London air pollution and NYC crime data simply run the corresponding `./run.sh` scripts within the  `datasets` folder.
+
+Then within each experiment folder (e.g `experiments/air_quality/`) run `python setup_data.py`.
+
+### Running Experiments
+
+tbd.
 

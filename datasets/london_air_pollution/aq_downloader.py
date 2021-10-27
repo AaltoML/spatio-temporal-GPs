@@ -47,12 +47,12 @@ laqn_site_codes = laqn_sites['SiteCode']
 if DOWNLOAD_FLAG:
     count = 0
     for site in laqn_site_codes:
-        filename = "{site}_{year}.Rdata".format(site=site,year=YEAR)
+        filename = "{site}_{year}.RData".format(site=site,year=YEAR)
 
         #check if site already downloaded
         if not os.path.isfile('downloaded_data/aq_r_data/{filename}'.format(filename=filename)): 
 
-            url = "http://www.londonair.org.uk/r_data/{filename}".format(filename=filename)
+            url = "https://www.londonair.org.uk/r_data/{filename}".format(filename=filename)
             dir_to_save = 'downloaded_data/aq_r_data/{filename}'.format(filename=filename)
 
             #check that file exists on server
@@ -81,7 +81,7 @@ if DOWNLOAD_FLAG:
 
 #========== CONVERT RDATA TO CSV ============
 for site in laqn_site_codes:
-    filename = 'downloaded_data/aq_r_data/' + "{site}_{year}.Rdata".format(site=site,year=YEAR)
+    filename = 'downloaded_data/aq_r_data/' + "{site}_{year}.RData".format(site=site,year=YEAR)
     filename_csv ='downloaded_data/aq_csv/' + '{site}_{year}.csv'.format(site=site, year=YEAR)
     if os.path.isfile(filename) and not  os.path.isfile(filename_csv):
         rdata_to_csv_for_aq(filename, filename_csv, 'x')
@@ -92,7 +92,7 @@ for site in laqn_site_codes:
 #========== MERGE CSVs INTO ONE FILE ============
 total_df = pd.DataFrame(columns=['site', 'date']+POLLUTANTS)
 for site in laqn_site_codes:
-    filename = "{site}_{year}.Rdata".format(site=site,year=YEAR)
+    filename = "{site}_{year}.RData".format(site=site,year=YEAR)
     filename_csv ='downloaded_data/aq_csv/' + '{site}_{year}.csv'.format(site=site, year=YEAR)
     if os.path.isfile(filename_csv) and os.path.getsize(filename_csv) > 0:
         print(filename_csv)

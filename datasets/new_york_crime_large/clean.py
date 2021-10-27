@@ -1,7 +1,7 @@
 import pandas as pd
 
 import sys
-sys.path.append('../../code/experiments/utils/')
+sys.path.append('../../experiments/')
 import utils
 
 df = pd.read_csv('data/NYPD_Complaint_Data_Historic.csv')
