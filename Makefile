@@ -28,6 +28,13 @@ experiments:
 	#cd experiments/air_quality/models && python m_ski.py 2
 	#cd experiments/air_quality/models && python m_ski.py 3
 	#cd experiments/air_quality/models && python m_ski.py 4
+	@echo 'Running NYC experiments'
+	cd experiments/nyc_crime && mkdir -p results
+	#cd experiments/nyc_crime/models && python m_gpflow.py 0
+	#cd experiments/nyc_crime/models && python m_gpflow.py 1
+	#cd experiments/nyc_crime/models && python m_gpflow.py 2
+	#cd experiments/nyc_crime/models && python m_gpflow.py 3
+	#cd experiments/nyc_crime/models && python m_gpflow.py 4
 
 
 
