@@ -1,6 +1,6 @@
-jax==0.2.24
-jaxlib==0.1.73
-objax==1.4.0
+jax==0.2.9
+jaxlib==0.1.60
+objax==1.3.1
 numpy==1.21.3
 matplotlib==3.4.3
 scipy==1.7.1
@@ -13,3 +13,4 @@ loguru==0.5.3
 rtree==0.9.7
 geopandas==0.10.2
 tqdm==4.62.3
+numba==0.54.1
