@@ -1,50 +1,60 @@
 import torch
 import gpytorch
 from gpytorch.means import ConstantMean
-from gpytorch.kernels import MaternKernel, ScaleKernel, RBFKernel, ProductStructureKernel, GridInterpolationKernel
+from gpytorch.kernels import MaternKernel, ScaleKernel, GridInterpolationKernel
 from gpytorch.distributions import MultivariateNormal
 import numpy as np
 from loguru import logger
 import pickle
 from timeit import default_timer as timer
 import matplotlib.pyplot as plt
+import sys
+
+
+if len(sys.argv) > 1:
+    ind = int(sys.argv[1])
+    plot_final = False
+else:
+    ind = 0
+    plot_final = True
 
 
 inducing_type = 'all_time'  # 'default'
 num_z = 30
 likelihood_noise = 5.
-kernel_lengthscales = [0.01, 0.2, 0.2]
-step_size = 0.1
-epochs = 20
+kernel_lengthscales = [0.001, 0.2, 0.2]
+step_size = 0.01
+iters = 300
 init_params = {}
 optimizer = torch.optim.Adam
 
+cpugpu = str(0)
 
-# get data file names
-train_name = 'train_data_0.pickle'
-pred_name = 'pred_data_0.pickle'
 
 # ===========================Load Data===========================
-data = pickle.load(open(f'/Users/wilkinw1/postdoc/inprogress/Newt-dev/newt/experiments/air_quality/data/{train_name}', "rb"))
-pred_data = pickle.load(open(f'/Users/wilkinw1/postdoc/inprogress/Newt-dev/newt/experiments/air_quality/data/{pred_name}', "rb" ))
-train_data = data
+train_data = pickle.load(open("../data/train_data_" + str(ind) + ".pickle", "rb"))
+pred_data = pickle.load(open("../data/pred_data_" + str(ind) + ".pickle", "rb"))
 
-X = data['X']
-print(X.shape)
+X = train_data['X']
+Y = np.squeeze(train_data['Y'])
 
-Y = np.squeeze(data['Y'])
+X_t = pred_data['test']['X']
+Y_t = pred_data['test']['Y']
 
-non_nan_idx = ~np.isnan(Y)
+print('X: ', X.shape)
 
-X = X[non_nan_idx]
-Y = Y[non_nan_idx]
+non_nan_idx = np.squeeze(~np.isnan(Y))
+
+X = torch.tensor(X[non_nan_idx]).float()
+Y = torch.tensor(Y[non_nan_idx]).float()
 
 D = X.shape[1]
-Nt = 2159  # X.shape[0]
+Nt = 2159  # number of time steps
 
-X = torch.tensor(X).float()[:2159*2]
-Y = torch.tensor(Y).float()[:2159*2]
-X_pred_timeseries = torch.tensor(pred_data['timeseries']['X'][:2159]).float()
+non_nan_idx_t = np.squeeze(~np.isnan(Y_t))
+
+X_t = torch.tensor(X_t[non_nan_idx_t]).float()
+Y_t = np.squeeze(Y_t[non_nan_idx_t])
 
 
 class GPRegressionModelSKI(gpytorch.models.ExactGP):
@@ -77,69 +87,12 @@ class GPRegressionModelSKI(gpytorch.models.ExactGP):
         return MultivariateNormal(mean_x, covar_x)
 
 
-class GPRegressionModelSKIP(gpytorch.models.ExactGP):
-
-    def __init__(self, train_x, train_y, kernel, likelihood):
-        super(GPRegressionModelSKIP, self).__init__(train_x, train_y, likelihood)
-        self.mean_module = ConstantMean()
-
-        if inducing_type == 'default':
-            grid_size = gpytorch.utils.grid.choose_grid_size(train_x)
-            logger.info(f'grid_size default: {grid_size}')
-            init_params['grid_size'] = grid_size
-
-        elif inducing_type == 'all_time':
-            grid_size = np.array([Nt, num_z, num_z]).astype(int)
-            init_params['grid_size'] = grid_size
-
-        time_kernel = gpytorch.kernels.MaternKernel(ard_num_dims=1, nu=1.5)
-        time_kernel.lengthscale = torch.tensor([kernel_lengthscales[0]])
-        space_kernel = gpytorch.kernels.MaternKernel(ard_num_dims=1, nu=1.5)
-        space_kernel.lengthscale = torch.tensor([kernel_lengthscales[1]])
-
-        # this version breaks prediciton:
-        self.covar_module = ProductStructureKernel(
-            ScaleKernel(
-                GridInterpolationKernel(
-                    time_kernel,
-                    grid_size=Nt,
-                    num_dims=1
-                )
-            ),
-            num_dims=1,
-            active_dims=0
-        ) * ProductStructureKernel(
-            ScaleKernel(
-                GridInterpolationKernel(
-                    space_kernel,
-                    grid_size=num_z,
-                    num_dims=1
-                )
-            ),
-            num_dims=D-1,
-            active_dims=list(range(D))[1:]  # ignore first dimension
-        )
-
-        # this version works:
-        # self.covar_module = ProductStructureKernel(
-        #     ScaleKernel(
-        #         GridInterpolationKernel(time_kernel, grid_size=100, num_dims=1)
-        #     ), num_dims=D
-        # )
-
-    def forward(self, x):
-        mean_x = self.mean_module(x)
-        covar_x = self.covar_module(x)
-        return MultivariateNormal(mean_x, covar_x)
-
-
 kern = MaternKernel(ard_num_dims=3, nu=1.5)
 # kern = MaternKernel(ard_num_dims=1, nu=1.5)
 lik = gpytorch.likelihoods.GaussianLikelihood()
 lik.noise = torch.tensor(likelihood_noise)
 
 model = GPRegressionModelSKI(X, Y, kern, lik)  # SKI model
-# model = GPRegressionModelSKIP(X, Y, kern, lik)  # SKIP model
 
 # train
 model.train()
@@ -156,7 +109,7 @@ loss_arr = []
 
 def train():
 
-    for i in range(epochs):
+    for i in range(iters):
         # Zero backprop gradients
         optimizer.zero_grad()
 
@@ -168,7 +121,7 @@ def train():
             # Calc loss and backprop derivatives
             loss = -mll(output, torch.squeeze(Y))
             loss.backward()
-        print('Iter %d/%d - Loss: %.3f' % (i + 1, epochs, loss.item()))
+        print('Iter %d/%d - Loss: %.3f' % (i + 1, iters, loss.item()))
 
         loss_arr.append(loss.detach().numpy())
 
@@ -186,31 +139,51 @@ end = timer()
 training_time = end - start
 
 
-#===========================Predict===========================
+# ===========================Predict===========================
 
 model.eval()
 lik.eval()
 
+print('noise var:', model.likelihood.noise.detach().numpy())
+
 logger.info('Predicting')
 
-# --- SKI predictions ---
-
-# def _prediction_fn(XS):
-#     XS = torch.tensor(XS).float()
-#     with torch.no_grad(), gpytorch.settings.fast_pred_var():
-#         preds = lik(model(XS))
-#         mean, var = preds.mean, preds.variance
-#         mean = mean.detach().numpy()
-#         var = var.detach().numpy()
-#         return mean, var
-
-# --- SKIP prediction ---
 
 with gpytorch.settings.max_preconditioner_size(10), torch.no_grad():
     with gpytorch.settings.use_toeplitz(False), gpytorch.settings.max_root_decomposition_size(30), gpytorch.settings.fast_pred_var():
-        preds = model(X_pred_timeseries)
+        preds = model(X_t)
 
 
-plt.plot(preds.mean)
-plt.show()
+def negative_log_predictive_density(y, post_mean, post_cov, lik_cov):
+    # logZₙ = log ∫ 𝓝(yₙ|fₙ,σ²) 𝓝(fₙ|mₙ,vₙ) dfₙ = log 𝓝(yₙ|mₙ,σ²+vₙ)
+    cov = lik_cov + post_cov
+    lZ = np.squeeze(-0.5 * np.log(2 * np.pi * cov) - 0.5 * (y - post_mean) ** 2 / cov)
+    return -lZ
 
+
+posterior_mean, posterior_var = preds.mean.detach().numpy(), preds.variance.detach().numpy()
+
+noise_var = model.likelihood.noise.detach().numpy()
+print('noise var:', noise_var)
+
+nlpd = np.mean(negative_log_predictive_density(y=Y_t,
+                                               post_mean=posterior_mean,
+                                               post_cov=posterior_var,
+                                               lik_cov=noise_var))
+rmse = np.sqrt(np.nanmean((np.squeeze(Y_t) - np.squeeze(posterior_mean))**2))
+print('nlpd: %2.3f' % nlpd)
+print('rmse: %2.3f' % rmse)
+
+avg_time_taken = training_time / iters
+print('avg iter time:', avg_time_taken)
+
+with open("../results/ski_" + str(ind) + "_" + cpugpu + "_time.txt", "wb") as fp:
+    pickle.dump(avg_time_taken, fp)
+with open("../results/ski_" + str(ind) + "_" + cpugpu + "_nlpd.txt", "wb") as fp:
+    pickle.dump(nlpd, fp)
+with open("../results/ski_" + str(ind) + "_" + cpugpu + "_rmse.txt", "wb") as fp:
+    pickle.dump(rmse, fp)
+
+if plot_final:
+    plt.plot(posterior_mean)
+    plt.show()

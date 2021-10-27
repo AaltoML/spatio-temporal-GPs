@@ -26,8 +26,8 @@ else:
 
 
 # ===========================Load Data===========================
-train_data = pickle.load(open("data/train_data_" + str(ind) + ".pickle", "rb"))
-pred_data = pickle.load(open("data/pred_data_" + str(ind) + ".pickle", "rb"))
+train_data = pickle.load(open("../data/train_data_" + str(ind) + ".pickle", "rb"))
+pred_data = pickle.load(open("../data/pred_data_" + str(ind) + ".pickle", "rb"))
 
 X = train_data['X']
 Y = train_data['Y']
@@ -223,9 +223,9 @@ if len(tf.config.list_physical_devices('GPU')) > 0:
 else:
     cpugpu = 'cpu'
 
-with open("output/gpflow_" + str(ind) + "_" + str(num_z_ind) + "_" + cpugpu + "_time.txt", "wb") as fp:
+with open("../results/gpflow_" + str(ind) + "_" + str(num_z_ind) + "_" + cpugpu + "_time.txt", "wb") as fp:
     pickle.dump(avg_time_taken, fp)
-with open("output/gpflow_" + str(ind) + "_" + str(num_z_ind) + "_" + cpugpu + "_nlpd.txt", "wb") as fp:
+with open("../results/gpflow_" + str(ind) + "_" + str(num_z_ind) + "_" + cpugpu + "_nlpd.txt", "wb") as fp:
     pickle.dump(nlpd, fp)
-with open("output/gpflow_" + str(ind) + "_" + str(num_z_ind) + "_" + cpugpu + "_rmse.txt", "wb") as fp:
+with open("../results/gpflow_" + str(ind) + "_" + str(num_z_ind) + "_" + cpugpu + "_rmse.txt", "wb") as fp:
     pickle.dump(rmse, fp)
