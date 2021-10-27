@@ -12,3 +12,4 @@ gpytorch==1.5.1
 loguru==0.5.3
 rtree==0.9.7
 geopandas==0.10.2
+tqdm==4.62.3
