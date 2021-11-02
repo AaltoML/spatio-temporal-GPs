@@ -14,7 +14,7 @@ Code for the NeurIPS 2021 paper *'Spatio-Temporal Variational Gaussian Processes
 
 ## Experiment Setup
 
-This has been tested on a Macbook Pro. All spatio-temporal VGP models have been implemented within the Bayes-newton package: https://github.com/AaltoML/Newt . 
+This has been tested on a Macbook Pro. All spatio-temporal VGP models have been implemented within the Bayes-Newton package: https://github.com/AaltoML/BayesNewton . 
 
 ### Environment Setup
 
