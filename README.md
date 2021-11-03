@@ -1,9 +1,11 @@
-# spatio-temporal-GPs
+# Spatio-Temporal Variational GPs
 
-Code for the NeurIPS 2021 paper *'Spatio-Temporal Variational Gaussian Processes'* by Oliver Hamelijnck, William Wilkinson, Niki Loppi, Arno Solin and Theodoros Damoulas.
+This repository is the official implementation of the methods in the publication:
+
+* O. Hamelijnck, W.J. Wilkinson, N.A. Loppi, A. Solin, and T. Damoulas (2021). **Spatio-temporal variational Gaussian processes**. In *Neural Information Processing Systems (NeurIPS)*. [[arXiv]](https://arxiv.org/abs/2110.13572)
 
 ## Citing this work:
-```
+```bibtex
 @inproceedings{hamelijnck2021spatio,
 	title={Spatio-Temporal Variational {G}aussian Processes},
 	author={Hamelijnck, Oliver and Wilkinson, William and Loppi, Niki and Solin, Arno and Damoulas, Theodoros},
@@ -14,7 +16,7 @@ Code for the NeurIPS 2021 paper *'Spatio-Temporal Variational Gaussian Processes
 
 ## Experiment Setup
 
-This has been tested on a Macbook Pro. All spatio-temporal VGP models have been implemented within the Bayes-Newton package: https://github.com/AaltoML/BayesNewton . 
+This has been tested on a Macbook Pro. All spatio-temporal VGP models have been implemented within the [Bayes-Newton package](https://github.com/AaltoML/BayesNewton). 
 
 ### Environment Setup
 
@@ -27,7 +29,7 @@ conda activate spatio_gp
 
 Then install the required python packages:
 
-```
+```bash
 pip install -r requirements.txt
 ```
 
@@ -55,9 +57,13 @@ To run all experiments across all training folds run:
 make experiments
 ```
 
-To run an individual experiment refer to the Makefile.
+To run an individual experiment refer to the `Makefile`.
 
 #### Baselines used
 
-- GPFlow2 : https://github.com/GPflow/GPflow
-- GPYTorch: https://github.com/cornellius-gp/gpytorch
+- `GPFlow2` : https://github.com/GPflow/GPflow
+- `GPYTorch`: https://github.com/cornellius-gp/gpytorch
+
+## License
+
+This software is provided under the [MIT license](LICENSE).
