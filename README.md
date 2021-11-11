@@ -2,7 +2,7 @@
 
 This repository is the official implementation of the methods in the publication:
 
-* O. Hamelijnck, W.J. Wilkinson, N.A. Loppi, A. Solin, and T. Damoulas (2021). **Spatio-temporal variational Gaussian processes**. In *Neural Information Processing Systems (NeurIPS)*. [[arXiv]](https://arxiv.org/abs/2110.13572)
+* O. Hamelijnck, W.J. Wilkinson, N.A. Loppi, A. Solin, and T. Damoulas (2021). **Spatio-temporal variational Gaussian processes**. In *Neural Information Processing Systems (NeurIPS)*. [[arXiv]](https://arxiv.org/abs/2111.01732)
 
 ## Citing this work:
 ```bibtex
